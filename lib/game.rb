@@ -23,7 +23,12 @@ class Game
     until @board.full? || @ended
       turn
       @board.draw
-      @board.won?(@players[@current].piece)
+      if @board.won?(@players[@current].piece)
+        puts "#{@players[@current].name} won!"
+        exit
+      end
+      change_player_turn
+
     end
     exit
   end
@@ -42,10 +47,9 @@ class Game
   def turn
     column = gets.chomp.to_i - 1
     @board.place_move(@players[@current].piece, column)
-    @current = change_player_turn
   end
 
   def change_player_turn
-    (@current + 1) % 2
+    @current = (@current + 1) % 2
   end
 end

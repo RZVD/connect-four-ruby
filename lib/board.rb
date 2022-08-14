@@ -2,6 +2,10 @@ require 'os'
 
 # Board class
 class Board
+  EMPTY_CIRCLE = "\u25cb"
+  YELLOW_CIRCLE = "\e[33m\u25cf\e[0m"
+  BLUE_CIRCLE = "\e[34m\u25cf\e[0m"
+
   attr_reader :grid
 
   BOARD_HEIGHT = 6
@@ -30,44 +34,30 @@ class Board
   end
 
   def won?(piece)
-    BOARD_HEIGHT.times do |row|
-      BOARD_WIDTH.times do |column|
-        if check_vertical(row, column,
-                          piece) || check_horizontal(row, column, piece) || check_diagonals(row, column, piece)
-          true
-        end
+    horizontal_check(piece) || vertical_check(piece) || diagonal_check(piece)
+  end
+
+  def horizontal_check(piece)
+    @grid.each do |row|
+      # window = row.each_cons(4).uniq
+      row.each_cons(4) do |window|
+        return true if window.all? { |slot| slot == piece }
       end
     end
     false
   end
 
-  def check_vertical(row, column, piece)
-    return if row > 2
-
-    @grid[row][column] == piece && @grid[row + 1][column] == piece && @grid[row + 2][column] == piece && @grid[row + 3][column] == piece
+  def vertical_check(piece)
+    @grid.transpose.each do |row|
+      # window = row.each_cons(4).uniq
+      row.each_cons(4) do |window|
+        return true if window.all? { |slot| slot == piece }
+      end
+    end
+    false
   end
 
-  def check_horizontal(row, column, piece)
-    return if column > 3
-
-    @grid[row][column] == piece && @grid[row][column + 1] == piece && @grid[row][column + 2] == piece && @grid[row][column + 3] == piece
-  end
-
-  def check_diagonals(row, column, piece)
-    return unless row < 3
-
-    check_right_diagonal(row, column, piece) || check_left_diagonal(row, column, piece)
-  end
-
-  def check_left_diagonal(row, column, piece)
-    return if column > 3
-
-    @grid[row][column] == piece && @grid[row + 1][column + 1] == piece && @grid[row + 2][column + 2] == piece && @grid[row + 3][column + 3] == piece
-  end
-
-  def check_right_diagonal(row, column, piece)
-    return if column < 3
-
-    @grid[row][column] == piece && @grid[row + 1][column - 1] == piece && @grid[row + 2][column - 2] == piece && @grid[row + 3][column - 3] == piece
+  def diagonal_check(_piece)
+    false
   end
 end
