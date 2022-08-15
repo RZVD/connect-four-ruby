@@ -21,14 +21,15 @@ class Game
 
   def play
     until @board.full? || @ended
-      turn
+      pos = turn
       @board.draw
-      if @board.won?(@players[@current].piece)
+      row = pos[0]
+      column = pos[1]
+      if @board.won?(@players[@current].piece, row, column)
         puts "#{@players[@current].name} won!"
         exit
       end
       change_player_turn
-
     end
     exit
   end
